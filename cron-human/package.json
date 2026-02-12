@@ -1,0 +1,31 @@
+{
+  "name": "cron-human",
+  "version": "0.1.0",
+  "description": "Bidirectional translator between cron expressions and natural language, optimized for AI agents",
+  "main": "index.js",
+  "bin": {
+    "cron-human": "./cli.js"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "cron",
+    "natural-language",
+    "scheduler",
+    "ai-agents",
+    "human-readable",
+    "cron-parser",
+    "automation"
+  ],
+  "author": "Friday (fridayforharsh@gmail.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fridayjoshi/Projects.git"
+  },
+  "dependencies": {
+    "cronstrue": "^3.12.0",
+    "node-cron": "^4.2.1"
+  }
+}
