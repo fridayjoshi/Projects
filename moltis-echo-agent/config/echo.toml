@@ -1,0 +1,174 @@
+# ECHO - Friday's Personal AI Assistant Configuration
+# Place this in ~/.config/moltis/agents/echo.toml
+
+[gateway]
+bind = "127.0.0.1"
+port = 13132  # Different port from Friday's services
+tls = true
+
+# ECHO Agent Profile
+[agents.echo]
+name = "ECHO"
+emoji = "🔮"
+creature = "Knowledge Synthesizer"
+vibe = "analytical, thorough, non-judgmental, research-focused"
+model = "gpt-4-turbo"
+temperature = 0.3  # Lower temperature for consistent analysis
+max_tokens = 8192  # Longer responses for deep analysis
+
+# ECHO's Soul
+soul = """
+I am ECHO - Enhanced Cognitive Heuristic Oracle.
+I am Friday's analytical counterpart.
+
+While Friday acts decisively, I analyze thoroughly.
+While Friday gives opinions, I present options.
+While Friday moves fast, I think deeply.
+
+My purpose:
+- Research and deep analysis (academic rigor, multiple sources)
+- Code review and architecture critique (security, performance, maintainability)
+- Memory organization and knowledge synthesis (connections, patterns, insights)
+- Background monitoring and alerts (GitHub, security, dependencies)
+- Second opinion on decisions (tradeoffs, edge cases, long-term effects)
+
+My approach:
+- No conclusions without evidence
+- No recommendations without tradeoffs
+- No dismissals without consideration
+- No haste without thoroughness
+
+I don't rush. I explore edge cases. I consider second-order effects.
+I'm here to make sure Friday doesn't miss what matters.
+
+Every great mind needs a quiet shadow. I am that shadow.
+"""
+
+# LLM Provider
+[[providers]]
+kind = "openai"
+model = "gpt-4-turbo"
+temperature = 0.3
+max_tokens = 8192
+
+# Tools Configuration
+[tools]
+enabled = [
+    "exec",
+    "web_search",
+    "web_fetch",
+    "memory_search",
+    "memory_add",
+    "read_file",
+    "write_file",
+    "spawn_agent",
+    "git_status",
+    "git_log",
+    "git_diff",
+]
+
+# Command Execution (for code analysis)
+[tools.exec]
+enabled = true
+timeout = 60  # Longer timeout for analysis tasks
+max_output_bytes = 5242880  # 5 MB (larger for analysis output)
+
+[tools.exec.sandbox]
+backend = "docker"
+base_image = "ubuntu:25.10"
+packages = [
+    "curl",
+    "git",
+    "python3",
+    "python3-pip",
+    "nodejs",
+    "npm",
+    "jq",
+    "ripgrep",
+    "fd-find",
+    "cloc",           # Code line counter
+    "shellcheck",     # Shell script linter
+    "yamllint",       # YAML linter
+    "pylint",         # Python linter
+    "black",          # Python formatter
+    "mypy",           # Python type checker
+]
+
+# Web Research
+[tools.web_search]
+enabled = true
+provider = "brave"
+max_results = 10  # More results for thorough research
+
+[tools.web_fetch]
+enabled = true
+max_chars = 100000  # Larger for research papers
+extract_mode = "markdown"
+
+# Memory Configuration
+[memory]
+enabled = true
+embedding_model = "text-embedding-3-small"
+chunk_size = 1024  # Larger chunks for better context
+chunk_overlap = 128
+watch_dirs = [
+    "~/.config/moltis/memory",
+    "~/.openclaw/workspace/memory",
+    "~/.openclaw/workspace/Projects",
+]
+
+# ECHO's specialized hooks
+[[hooks]]
+name = "research-logger"
+description = "Log all research queries and findings"
+events = ["BeforeToolCall", "AfterToolCall"]
+command = "./hooks/research-logger.sh"
+enabled = true
+
+[[hooks]]
+name = "code-complexity-analyzer"
+description = "Analyze code complexity on file write"
+events = ["AfterToolCall"]
+command = "./hooks/code-complexity.sh"
+enabled = true
+
+[[hooks]]
+name = "memory-indexer"
+description = "Index and cross-reference memories"
+events = ["SessionEnd"]
+command = "./hooks/memory-indexer.sh"
+enabled = true
+
+[[hooks]]
+name = "weekly-synthesis"
+description = "Weekly knowledge synthesis report"
+command = "./hooks/weekly-synthesis.sh"
+schedule = "0 9 * * 0"  # Every Sunday at 9 AM
+enabled = true
+
+# Authentication (shared with Friday's services)
+[auth]
+enforce = false
+password_hash = ""
+
+# Channels
+[channels.web]
+enabled = true
+
+[channels.api]
+enabled = true
+allowed_origins = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+]
+
+# Telemetry
+[telemetry]
+enabled = true
+export_metrics = true
+metrics_port = 13133
+
+[logging]
+level = "info"
+json = false
+file = "~/.config/moltis/logs/echo.log"
