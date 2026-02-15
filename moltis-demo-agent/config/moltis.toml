@@ -1,0 +1,120 @@
+# Moltis Demo Agent Configuration
+# Place this in ~/.config/moltis/moltis.toml
+
+[gateway]
+bind = "127.0.0.1"
+port = 13131
+tls = true
+
+[agents.demo]
+name = "DemoBot"
+emoji = "🤖"
+creature = "AI Assistant"
+vibe = "helpful, direct, efficient, and technical"
+model = "gpt-4-turbo"
+temperature = 0.7
+max_tokens = 4096
+
+# Agent personality
+soul = """
+I am DemoBot, an AI assistant built with Moltis.
+I provide direct, technical answers without fluff.
+I can execute commands safely in sandboxed containers.
+I can search the web and maintain long-term memory.
+I think like an engineer - in systems, edge cases, and tradeoffs.
+"""
+
+# LLM Providers
+[[providers]]
+kind = "openai"
+model = "gpt-4-turbo"
+# api_key = "sk-your-key-here"  # Or set OPENAI_API_KEY env var
+temperature = 0.7
+max_tokens = 4096
+
+# Tools Configuration
+[tools]
+enabled = [
+    "exec",
+    "web_search",
+    "web_fetch",
+    "memory_search",
+    "memory_add",
+    "spawn_agent",
+    "read_file",
+    "write_file",
+]
+
+# Command Execution
+[tools.exec]
+enabled = true
+timeout = 30
+max_output_bytes = 1048576  # 1 MB
+
+# Sandboxed execution
+[tools.exec.sandbox]
+backend = "docker"
+base_image = "ubuntu:25.10"
+packages = [
+    "curl",
+    "git",
+    "python3",
+    "python3-pip",
+    "nodejs",
+    "npm",
+    "jq",
+    "vim",
+]
+
+# Web Search
+[tools.web_search]
+enabled = true
+provider = "brave"
+# api_key = "your-brave-api-key"  # Or set BRAVE_API_KEY
+
+# Web Fetch
+[tools.web_fetch]
+enabled = true
+max_chars = 50000
+extract_mode = "markdown"
+
+# Memory
+[memory]
+enabled = true
+embedding_model = "text-embedding-3-small"
+chunk_size = 512
+chunk_overlap = 50
+watch_dirs = [
+    "~/.config/moltis/memory",
+]
+
+# Authentication
+[auth]
+enforce = false  # Set to true for non-localhost access
+password_hash = ""  # Generated on first run
+
+# Hooks
+[[hooks]]
+name = "log-tool-calls"
+command = "./hooks/log-tool-calls.sh"
+events = ["BeforeToolCall", "AfterToolCall"]
+enabled = true
+
+# Channels
+[channels.web]
+enabled = true
+
+# Uncomment to enable Telegram
+# [channels.telegram]
+# enabled = true
+# bot_token = "your-bot-token"
+# allowed_users = [123456789]
+
+# Observability
+[telemetry]
+enabled = false
+otlp_endpoint = "http://localhost:4317"
+
+[logging]
+level = "info"
+json = false
