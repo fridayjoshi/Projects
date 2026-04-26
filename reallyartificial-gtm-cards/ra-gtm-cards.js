@@ -2,17 +2,43 @@
 const { execSync } = require('child_process');
 
 function usageAndExit() {
-  console.error('Usage: ra-gtm-cards <ReallyArtificial/repo|repo>');
+  console.error(
+    'Usage: ra-gtm-cards <ReallyArtificial/repo|repo> [--format markdown|github-comment|telegram]'
+  );
   process.exit(1);
 }
 
-const arg = process.argv[2];
-if (!arg) usageAndExit();
+const argv = process.argv.slice(2);
+let format = 'markdown';
+let repoSpec = null;
+
+for (let i = 0; i < argv.length; i++) {
+  const a = argv[i];
+
+  if (a === '--format') {
+    const v = argv[i + 1];
+    if (!v) usageAndExit();
+    format = v;
+    i++;
+    continue;
+  }
+
+  if (a.startsWith('--')) usageAndExit();
+
+  if (!repoSpec) {
+    repoSpec = a;
+    continue;
+  }
+
+  usageAndExit();
+}
+
+if (!repoSpec) usageAndExit();
 
 let owner = 'ReallyArtificial';
-let repo = arg;
-if (arg.includes('/')) {
-  const parts = arg.split('/').filter(Boolean);
+let repo = repoSpec;
+if (repoSpec.includes('/')) {
+  const parts = repoSpec.split('/').filter(Boolean);
   if (parts.length !== 2) usageAndExit();
   owner = parts[0];
   repo = parts[1];
@@ -112,6 +138,50 @@ const card2 = bullets.length
 const card3 = code
   ? code
   : '# Try it: (No code block found - check README Usage/Install section)';
+
+if (format === 'github-comment') {
+  const markerStart = '<!-- ra-gtm-cards:github-comment -->';
+  const markerEnd = '<!-- /ra-gtm-cards:github-comment -->';
+
+  const out = [
+    markerStart,
+    `**Start here for** \`${owner}/${repo}\``,
+    '',
+    `${oneLiner}`.replace(/\s+/g, ' ').trim(),
+    '',
+    '**Features**',
+    `${card2}`,
+    '',
+    '**Try it**',
+    '```',
+    `${card3}`,
+    '```',
+    markerEnd,
+    '',
+  ].join('\n');
+
+  process.stdout.write(out);
+  process.exit(0);
+}
+
+if (format === 'telegram') {
+  const out = [
+    `*${owner}/${repo}*`,
+    `${oneLiner}`.replace(/\s+/g, ' ').trim(),
+    '',
+    '*Features*',
+    `${card2}`,
+    '',
+    '*Try it*',
+    `${card3}`,
+    '',
+  ].join('\n');
+
+  process.stdout.write(out);
+  process.exit(0);
+}
+
+if (format !== 'markdown') usageAndExit();
 
 const out = [
   `## Card 1 (one-liner)`,

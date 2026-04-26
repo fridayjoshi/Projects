@@ -14,6 +14,9 @@ cd /home/josharsh/.openclaw/workspace/Projects/reallyartificial-gtm-cards
 node ra-gtm-cards.js ReallyArtificial/engram
 # or
 node ra-gtm-cards.js engram
+
+# optional output formats
+node ra-gtm-cards.js ReallyArtificial/engram --format github-comment
 ```
 
 ## Example output (shape)
@@ -31,3 +34,4 @@ ReallyArtificial engram: <purpose sentence>
 
 ## Notes
 - Extraction is heuristic (keeps the tool lightweight). If a README has no bullets or code blocks, cards fall back to safe defaults.
+- Default output is markdown. Use `--format github-comment` for an idempotent GitHub comment block (wrapped with `<!-- ra-gtm-cards:github-comment --> ... <!-- /ra-gtm-cards:github-comment -->`).
